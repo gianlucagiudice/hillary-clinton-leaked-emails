@@ -3,15 +3,22 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 import dash
+
 import dash_core_components as dcc
 import dash_html_components as html
 from src.exploratory_analysis import *
+from src.countries_sentiment import (
+    plot_entities_boxplot, plot_entitites_sentiment, plot_entities_normalized,
+    plot_nations_geo, plot_nations_freq, plot_most_influential_countries)
 
-
+from dash.dependencies import Input, Output
 TOP_K = 15
 
 dataset = pd.read_csv("data/Emails.csv")
 persons = pd.read_csv("data/Persons.csv")
+df_entities = pd.read_pickle("pickle/df_entities.pkl")
+df_geo = pd.read_pickle("pickle/df_geo.pkl")
+df_nations = pd.read_pickle("pickle/df_nations.pkl")
 
 df = preprocess_emails(dataset, persons)
 
@@ -129,18 +136,74 @@ app.layout = html.Div(
                 )]),
 
             dcc.Tab(label='Sentiment Analysis', children=[
-                dcc.Graph(
-                    figure={
-                        'data': [
-                            {'x': [1, 2, 3], 'y': [1, 4, 1],
-                             'type': 'bar', 'name': 'SF'},
-                            {'x': [1, 2, 3], 'y': [1, 2, 3],
-                             'type': 'bar', 'name': u'Montréal'},
-                        ]
-                    }
+                html.Div(
+                    children=[
+                        html.Center(html.H2(children="Sentiment analysis paesi"))
+                    ]
+                ),
+                html.Div(
+                    style={"marginTop": 75},
+                    children=[
+                        html.H3(children="Frequenza paesi con sentiment associato"),
+                        html.Div(id="entities-sentiment-container"),
+                        html.Div(
+                            children=[
+                                html.Label("Top k paesi:"),
+                                dcc.Slider(
+                                    id="slider-entities-sentiment", min=1, max=len(df_entities),
+                                    step=1, value=30, marks={0: 0, len(df_entities): len(df_entities)}),
+                            ]
+                        ),
+
+                    ]
+                ),
+                html.Div(
+                    style={"marginTop": 75},
+                    children=[
+                        html.H3(children="Boxplot sentiment normalizzato"),
+                        html.Div(id="boxplot-sentiment-container"),
+                        html.Div(
+                            children=[
+                                html.Label("Threshold frequenza dei paesi:"),
+                                dcc.Slider(
+                                    id="slider-boxplot-sentiment", min=1, max=max(df_entities["freq"]),
+                                    step=1, value=2, marks={0: 0, max(df_entities["freq"]): max(df_entities["freq"])}),
+                            ]
+                        ),
+
+                    ]
+                ),
+                html.Div(
+                    style={"marginTop": 75},
+                    children=[
+                        html.H3(children="Sentiment normalizzato dei paesi più frequenti"),
+                        html.Div(id="sentiment-container"),
+                        html.Div(
+                            children=[
+                                html.Label("Threshold frequenza dei paesi:"),
+                                dcc.Slider(
+                                    id="slider-sentiment", min=1, max=max(df_entities["freq"]),
+                                    step=1, value=30, marks={0: 0, max(df_entities["freq"]): max(df_entities["freq"])}),
+                            ]
+                        ),
+                    ]
+                ),
+                html.Div(
+                    style={"marginTop": 75},
+                    children=[
+                        html.H3(children="Sentiment normalizzato dei paesi più frequenti"),
+                        html.Div(id="sentiment-geo-container"),
+                        html.Div(
+                            children=[
+                                html.Label("Threshold frequenza dei paesi:"),
+                                dcc.Slider(
+                                    id="slider-geo-sentiment", min=1, max=max(df_entities["freq"]),
+                                    step=1, value=30, marks={0: 0, max(df_entities["freq"]): max(df_entities["freq"])}),
+                            ]
+                        ),
+                    ]
                 )
             ]),
-
         ])])
 
 
@@ -151,6 +214,26 @@ def display_hisplot_expl(dropdown_value):
         return generate_hisplot_expl(df)
     dff = df[df.SenderFullName.str.contains('|'.join(dropdown_value))]
     return generate_hisplot_expl(dff)
+
+@app.callback(Output('entities-sentiment-container', 'children'),
+              Input('slider-entities-sentiment', 'value'))
+def display_entities_sentiment_container(value):
+    return dcc.Graph(figure=plot_entitites_sentiment(df_entities, top_k=value))
+
+@app.callback(Output('sentiment-container', 'children'),
+              Input('slider-sentiment', 'value'))
+def display_entities_sentiment_container(value):
+    return dcc.Graph(figure=plot_entities_normalized(df_entities, top_k=value))
+
+@app.callback(Output('sentiment-geo-container', 'children'),
+              Input('slider-geo-sentiment', 'value'))
+def display_entities_sentiment_container(value):
+    return dcc.Graph(figure=plot_nations_geo(df_geo, value))
+
+@app.callback(Output('boxplot-sentiment-container', 'children'),
+              Input('slider-boxplot-sentiment', 'value'))
+def display_entities_sentiment_container(value):
+    return dcc.Graph(figure=plot_entities_boxplot(df_entities, freq_th=value))
 
 
 if __name__ == '__main__':
