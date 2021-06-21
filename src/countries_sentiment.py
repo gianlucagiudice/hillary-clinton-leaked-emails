@@ -42,7 +42,6 @@ def plot_nations_freq(df_nations):
     return fig
 
 
-
 def plot_most_influential_countries(df_nations, top_entities):
     fig = go.Figure()
 
@@ -58,7 +57,7 @@ def plot_most_influential_countries(df_nations, top_entities):
     fig.update_layout(
         yaxis_title="Frequency",
         xaxis_title="Date",
-        title= dict(
+        title=dict(
             text=f'Frequency of the most polarized countries by date',
             xanchor='center',
             x=0.5, y=.9)
@@ -66,19 +65,20 @@ def plot_most_influential_countries(df_nations, top_entities):
     return fig
 
 
-def plot_nations_geo(df_geo, top_k=30):
-    df_geo = df_geo.iloc[:top_k]
+def plot_nations_geo(df_geo, freq_th=10):
+    df_geo = df_geo[df_geo["freq"] > freq_th]
     fig = px.scatter_geo(df_geo, lat="lat", lon="long", hover_name="entity", size="freq",
                          color="norm", color_continuous_scale="Bluered_r")
 
     fig.update_layout(
         title=dict(
-            text=f'Sentiment of the countries (top {top_k} by frequency)',
+            text=f'Sentiment of the countries (Frequency threshold {freq_th})',
             xanchor='center',
             x=0.5, y=0.9)
     )
     # fig.update_traces(marker=dict(size=10))
     return fig
+
 
 def plot_entitites_sentiment(df_entities, top_k=30):
     df_entities = df_entities.iloc[:top_k]
@@ -97,19 +97,19 @@ def plot_entitites_sentiment(df_entities, top_k=30):
     return fig
 
 
-def plot_entities_normalized(df_entities, top_k=30):
-    df_entities = df_entities.iloc[:top_k]
+def plot_entities_normalized(df_entities, freq_th=30):
+    df_entities = df_entities[df_entities["freq"] > freq_th]
     df_entities_sub = df_entities.sort_values(by="norm", ascending=False)
     df_entities_sub.head()
 
-    fig = px.bar(x=df_entities_sub["entity"], y=df_entities_sub["norm"],
-                 color=df_entities_sub["norm"], color_continuous_scale="Bluered_r")
+    fig = px.bar(df_entities_sub, x="entity", y="norm", hover_data=["freq"],
+                 color="norm", color_continuous_scale="Bluered_r")
 
     fig.update_layout(
         yaxis_title="Sentiment Score normalized",
         xaxis_title="Entity",
         title=dict(
-            text=f'Sentiment of the countries normalized (top {top_k} by frequency)',
+            text=f'Sentiment of the countries normalized (Frequency threshold {freq_th})',
             xanchor='center',
             x=0.5),
         coloraxis_colorbar=dict(title="Sentiment")
@@ -133,14 +133,15 @@ def plot_entities_boxplot(df_entities, freq_th=2):
 def get_most_influential_countries(df_ent, freq_th=2, top_k=6):
     df_ent = df_ent[df_ent["freq"]>freq_th]
     top_positive = df_ent.sort_values(by=["norm"], ascending=False).iloc[:top_k]
+    top_positive = top_positive[top_positive["norm"] >= 0]
     top_negative = df_ent.sort_values(by=["norm"], ascending=True).iloc[:top_k]
+    top_negative = top_negative[top_negative["norm"] < 0]
+
     return top_positive, top_negative
 
-
 def main():
-
     sns.set_theme()
-    pandarallel.initialize(progress_bar = False)
+    pandarallel.initialize(progress_bar=False)
 
     # Constants
     DBPEDIA_ENDPOINT = "https://api.dbpedia-spotlight.org/en/annotate"
@@ -153,14 +154,11 @@ def main():
     DATA_PATH = '../data/'
     EMAIL_DATA = 'Emails.csv'
 
-
     TOP_K = 30
-
 
     # Read dataframe
 
     # In[2]:
-
 
     df = pd.read_csv(join(DATA_PATH, EMAIL_DATA))
 
@@ -177,22 +175,20 @@ def main():
     df = df[df['MetadataDateSent'].notna()]
 
     # Parse date
-    df["MetadataDateSent"] = df["MetadataDateSent"].apply(lambda x : dparser.parse(x))
-    df["DateYear"] = df["MetadataDateSent"].apply(lambda x : x.year)
-    df["DateMonth"] = df["MetadataDateSent"].apply(lambda x : x.month)
-    df["DateDay"] = df["MetadataDateSent"].apply(lambda x : x.day)
+    df["MetadataDateSent"] = df["MetadataDateSent"].apply(lambda x: dparser.parse(x))
+    df["DateYear"] = df["MetadataDateSent"].apply(lambda x: x.year)
+    df["DateMonth"] = df["MetadataDateSent"].apply(lambda x: x.month)
+    df["DateDay"] = df["MetadataDateSent"].apply(lambda x: x.day)
 
     print(f"Number of NA values in body and date: {len_before - len(df)}.\n"
           f"Number of valid email: {len(df)}")
     df.head()
-
 
     # Date and time distribution.
     #
     # Since the emails belong to Hillary Clinton's personal account instead of the institutional one, we should notice few emails sent during weekdays.
 
     # In[3]:
-
 
     def plot_days_dist(days_metadata):
         days_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
@@ -204,11 +200,9 @@ def main():
 
     plot_days_dist(df["MetadataDateSent"])
 
-
     # Preprocessing
 
     # In[4]:
-
 
     # Body preprocessing
     def clean_body(body):
@@ -232,11 +226,9 @@ def main():
     print('>>> Raw:\n' + sample)
     print('>>> Cleaned:\n' + clean_body(sample))
 
-
     # Drop the emails that are too short
 
     # In[5]:
-
 
     def tokenize_body(body):
         tokenized = word_tokenize(body)
@@ -260,26 +252,20 @@ def main():
     to_tokenize = clean_body(sample)
     tokenize_body(to_tokenize)
 
-
     # In[6]:
-
 
     def process_body(body):
         body = clean_body(body)
         tokenized = tokenize_body(body)
         return tokenized
 
-
     # In[7]:
-
 
     df['Tokenized'] = df['ExtractedBodyText'].parallel_apply(process_body)
     df.to_pickle(SERIALIZATION_FOLDER + "df.pkl")
     df.head()
 
-
     # In[8]:
-
 
     def plot_tokens_distribution(values):
         ax = sns.displot(values, log=True, bins=30)
@@ -292,13 +278,12 @@ def main():
 
     plot_tokens_distribution(df['TokensLength'])
 
-
     # Wordcloud of the emails with few tokens
 
     # In[9]:
 
-
     TOKENS_THLD = 7
+
     def flatten_tokens(tokens_list):
         words_flatten = []
         for token in tokens_list:
@@ -314,27 +299,21 @@ def main():
         plt.axis("off")
         plt.show()
 
-
     # In[10]:
-
 
     words_flatten = flatten_tokens(df[df["TokensLength"] < TOKENS_THLD]["Tokenized"])
     title = f"Word cloud of the short emails (Num. of tokens < {TOKENS_THLD})"
     plot_wordcloud(words_flatten.value_counts(), title, 100, 70)
 
-
     # In[11]:
-
 
     words_flatten = flatten_tokens(df[df["TokensLength"] > TOKENS_THLD]["Tokenized"])
     title = f"Word cloud ot the long emails (Num. of tokens >= {TOKENS_THLD})"
     plot_wordcloud(words_flatten.value_counts(), title, 100, 70)
 
-
     # Named entity Recognition and linking on nations
 
     # In[12]:
-
 
     nlp = spacy.load("en_core_web_md")
     afn = Afinn()
@@ -343,31 +322,26 @@ def main():
         entities = [ent for ent in nlp(email_body).ents if ent.label_ == target_label]
         return [(entity.text.lower(), afn.score(entity.sent.lemma_)) for entity in entities]
 
-
     # Slides demo
 
     # In[13]:
 
-
     def named_entity_recognition_demo():
         doc = """[...] The United States should immediately ask the Security Council to authorize a no-flight zone and make clear to Russia and China that if they block the resolution, the blood of the Libyan opposition will be on their hands. [...]"""
         displacy.render(nlp(doc), style="ent", jupyter=True)
-    named_entity_recognition_demo()
 
+    named_entity_recognition_demo()
 
     # In[14]:
 
-
     df["EntitiesGPE"] = df["ExtractedBodyText"].parallel_apply(extract_entities, target_label='GPE')
     df["EntitiesGPE"].head()
-
 
     # Aggregate (sum) the sentiment among emails.
     #
     # If an entity appears one or more times in the email, its frequency contribution is 1.
 
     # In[15]:
-
 
     def evaluate_entities(entities_list, order='freq'):
         entity_score = dict()
@@ -389,13 +363,11 @@ def main():
 
     def clean_entities(entities, blacklist):
         for target in map(lambda x: x.lower(), blacklist):
-            if entities.get(target) is not None :
+            if entities.get(target) is not None:
                 del entities[target]
         return entities
 
-
     # In[16]:
-
 
     entities_to_remove = ['U.S.', 'US', 'the United States', 'America', 'usa',
                           "washington", "new york", "dc", "united states"]
@@ -403,15 +375,13 @@ def main():
     entities_gpe = clean_entities(entities_gpe, entities_to_remove)
     print(list(entities_gpe.items())[:15])
 
-
     # Entity linking using DBpedia Spotlights
 
     # In[17]:
 
-
     def entity_linking(*args):
         entity, session = args
-        params = {"text": entity, "confidence":0.1}
+        params = {"text": entity, "confidence": 0.1}
         headers = {"accept": "application/json"}
         response_url = session.get(url=DBPEDIA_ENDPOINT, params=params, headers=headers)
         try:
@@ -432,18 +402,14 @@ def main():
             entities_resolved[entity] = entity_dict
         return entities_resolved
 
-
     # In[18]:
-
 
     entities_gpe = resolve_entities(entities_gpe)
     print(list(entities_gpe.items())[:15])
 
-
     # Plot nations sentiment using
 
     # In[19]:
-
 
     def build_entities_df(entities):
         df_entities = pd.DataFrame(columns=["entity", "score", "freq"])
@@ -460,7 +426,7 @@ def main():
         false_positive = ["mcchrystal", "mcdonough"]
         false_positive_ids = []
         for fp in false_positive:
-            false_positive_ids.append(df_entities[df_entities["entity"]==fp].index)
+            false_positive_ids.append(df_entities[df_entities["entity"] == fp].index)
         false_positive_ids = [x.values[0] for x in false_positive_ids]
         try:
             df_entities = df_entities.drop(false_positive_ids)
@@ -469,41 +435,32 @@ def main():
 
         return df_entities
 
-
     df_entities = build_entities_df(entities_gpe)
     df_entities.to_pickle(os.path.join(SERIALIZATION_FOLDER, "df_entities.pkl"))
     df_entities.head()
 
-
     # In[20]:
-
 
     plot_entities_boxplot(df_entities).show()
 
-
     # In[21]:
-
 
     plot_entitites_sentiment(df_entities, top_k=TOP_K).show()
 
-
     # In[22]:
 
-
     plot_entities_normalized(df_entities, top_k=TOP_K).show()
-
 
     # Plot on map
 
     # In[29]:
-
 
     from SPARQLWrapper import SPARQLWrapper, JSON
     import tqdm
 
     def dbpedia_get_geo(uri):
         sparql = SPARQLWrapper("http://dbpedia.org/sparql")
-        query = r'select distinct ?lat ?long where {<' + uri +            '> geo:lat ?lat. <'+uri+'> geo:long ?long.}'
+        query = r'select distinct ?lat ?long where {<' + uri + '> geo:lat ?lat. <' + uri + '> geo:long ?long.}'
 
         try:
             sparql.setQuery(query)
@@ -522,45 +479,39 @@ def main():
             results = []
             for r in tqdm.tqdm(pool.imap_unordered(dbpedia_get_geo, dbpedia_uris), total=len(dbpedia_uris)):
                 results.append(r)
-            #results = pool.map(dbpedia_get_geo, dbpedia_uris)
+            # results = pool.map(dbpedia_get_geo, dbpedia_uris)
         # Append geo info
         df_geo = pd.DataFrame(results, columns=["dbpedia", "lat", "long"])
-        #df_geo = pd.concat([df, df_geo], axis=1)
+        # df_geo = pd.concat([df, df_geo], axis=1)
         df = df.join(df_geo.set_index("dbpedia"), on='dbpedia')
         df = df.dropna()
         return df
 
-
     # In[30]:
-
 
     df_geo = resolve_geo_info(df_entities)
     df_geo.to_pickle(os.path.join(SERIALIZATION_FOLDER, "df_geo.pkl"))
     df_geo.head()
 
-
-
     plot_nations_geo(df_geo).show()
-
 
     # In[32]:
 
-
     fig = go.Figure(
         data=go.Choropleth(
-        locations = df_geo['entity'],
-        z = df_geo['score'] /  df_geo['freq'],
-        text = df_geo['entity'],
-        # Greys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,
-        # Blues,Picnic,Rainbow,Portland,Jet,Hot,Blackbody,Earth,Electric,Viridis,Cividis.
-        colorscale = 'Bluered',
-        autocolorscale=False,
-        reversescale=True,
-        marker_line_color='darkgray',
-        marker_line_width=0.5,
-        colorbar_tickprefix = '',
-        colorbar_title = 'Score',
-    ))
+            locations=df_geo['entity'],
+            z=df_geo['score'] / df_geo['freq'],
+            text=df_geo['entity'],
+            # Greys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,
+            # Blues,Picnic,Rainbow,Portland,Jet,Hot,Blackbody,Earth,Electric,Viridis,Cividis.
+            colorscale='Bluered',
+            autocolorscale=False,
+            reversescale=True,
+            marker_line_color='darkgray',
+            marker_line_width=0.5,
+            colorbar_tickprefix='',
+            colorbar_title='Score',
+        ))
 
     fig.update_layout(
         title_text='Sentiment associated to countries',
@@ -569,12 +520,12 @@ def main():
             showcoastlines=False,
             projection_type='equirectangular'
         ),
-        annotations = [dict(
+        annotations=[dict(
             x=0.55,
             y=0.1,
             xref='paper',
             yref='paper',
-            showarrow = False,
+            showarrow=False,
             text="Hillary Clinton's emails"
         )]
     )
@@ -583,71 +534,57 @@ def main():
 
     fig.show()
 
-
     # Plot entities over time
 
     # In[33]:
-
 
     def parse_entities_name(entities):
         if entities:
             return [e[0] for e in entities]
         else:
             return []
-    df["EntitiesGPEName"] = df["EntitiesGPE"].apply(parse_entities_name)
 
+    df["EntitiesGPEName"] = df["EntitiesGPE"].apply(parse_entities_name)
 
     # In[34]:
 
-
-    df_nations = df.groupby(by=["DateYear", "DateMonth"]).apply(lambda x : list(x["EntitiesGPEName"]))
+    df_nations = df.groupby(by=["DateYear", "DateMonth"]).apply(lambda x: list(x["EntitiesGPEName"]))
     df_nations = pd.DataFrame(df_nations, columns=["Entities"]).reset_index()
-    df_nations["Entities"] = df_nations.reset_index()["Entities"].apply(lambda x:list(itertools.chain(*x)))
-    df_nations["Entities"] = df_nations["Entities"].apply(lambda x: x if x!= [] else None )
+    df_nations["Entities"] = df_nations.reset_index()["Entities"].apply(lambda x: list(itertools.chain(*x)))
+    df_nations["Entities"] = df_nations["Entities"].apply(lambda x: x if x != [] else None)
     df_nations = df_nations.dropna()
     df_nations["Date"] = [datetime.datetime(x["DateYear"], x["DateMonth"], 1) for _, x in df_nations.iterrows()]
     dx = pd.period_range(min(df_nations.Date), max(df_nations.Date), freq='M')
     dx = [datetime.datetime(x.year, x.month, 1) for x in dx]
     ts = pd.DataFrame(dx, columns=["Date"])
     df_nations = pd.merge(df_nations, ts, on="Date", how="outer").sort_values(by=["Date"])
-    df_nations["Entities"] = df_nations["Entities"].apply(lambda x : x if type(x) is list else [])
+    df_nations["Entities"] = df_nations["Entities"].apply(lambda x: x if type(x) is list else [])
     df_nations["Freq"] = df_nations["Entities"].apply(lambda x: len(x) if x != None else [])
     df_nations = df_nations.sort_values(by=["Date"])
     df_nations.to_pickle(os.path.join(SERIALIZATION_FOLDER, "df_nations.pkl"))
     df_nations.head()
 
-
     plot_nations_freq(df_nations).show()
 
-
     # In[36]:
-
 
     TOP_K_CATEGORY = 6
     FREQ_THLD = 10
 
-
     top_entities = get_most_influential_countries(df_entities, freq_th=FREQ_THLD, top_k=TOP_K_CATEGORY)
     top_entities
 
-
     # In[37]:
-
 
     df_nations.head()
 
-
     # In[38]:
-
 
     plot_most_influential_countries().show()
 
-
     # In[40]:
 
-
     df_entities.head()
-
 
     # In[ ]:
 
