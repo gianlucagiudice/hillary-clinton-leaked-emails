@@ -240,7 +240,6 @@ award
 away
 axelrod
 azerbaijan
-b
 babi
 back
 background
@@ -251,7 +250,6 @@ bahtiyar
 bailout
 baker
 balanc
-balkan
 ball
 ballot
 ban
@@ -397,7 +395,6 @@ burn
 bush
 busi
 buy
-c
 ca
 cabinet
 cabl
@@ -910,7 +907,6 @@ dutch
 duti
 dynam
 dysfunct
-e
 ea
 eager
 earli
@@ -1087,7 +1083,6 @@ extraordinari
 extrem
 extremist
 eye
-f
 face
 facebook
 facil
@@ -1260,7 +1255,6 @@ geller
 gen
 gender
 gener
-geneva
 genuin
 georg
 georgetown
@@ -1334,7 +1328,6 @@ guidanc
 gulf
 gun
 guy
-h
 haaretz
 hage
 hagu
@@ -1572,7 +1565,6 @@ issu
 itali
 italian
 item
-j
 jack
 jacki
 jackson
@@ -1626,7 +1618,6 @@ justic
 justif
 justifi
 juvenil
-k
 kabul
 kaminski
 kandahar
@@ -1661,14 +1652,12 @@ know
 knowledg
 known
 koch
-koh
 korea
 korean
 kurdish
 kurdistan
 kurt
 kyl
-l
 label
 labor
 labour
@@ -1940,7 +1929,6 @@ month
 monthli
 mood
 moral
-moratorium
 moreov
 mormon
 morn
@@ -1977,7 +1965,6 @@ muslim
 must
 mutual
 myth
-n
 name
 nanci
 narr
@@ -2070,14 +2057,12 @@ offer
 offic
 offici
 often
-oh
 ohio
 oil
 ok
 okay
 old
 older
-omar
 one
 ongo
 onlin
@@ -2125,7 +2110,6 @@ overview
 overwhelm
 owe
 own
-p
 pa
 pace
 packag
@@ -2384,7 +2368,6 @@ pursu
 push
 put
 pverveer
-q
 qaddafi
 qadhafi
 qaeda
@@ -2401,7 +2384,6 @@ quiet
 quit
 quot
 quran
-r
 race
 racial
 racism
@@ -2570,7 +2552,6 @@ riot
 rise
 risk
 rival
-river
 road
 rob
 robert
@@ -2874,7 +2855,6 @@ street
 strength
 strengthen
 stress
-stretch
 strike
 string
 strip
@@ -3032,7 +3012,6 @@ tie
 tight
 tiller
 time
-timelin
 tip
 titl
 tnc
@@ -3112,7 +3091,6 @@ two
 type
 typic
 tyron
-u
 uae
 udal
 uighur
@@ -3168,7 +3146,6 @@ usip
 usual
 utter
 uup
-v
 va
 vacat
 valenzuela
@@ -3214,7 +3191,6 @@ vote
 voter
 vow
 vulner
-w
 wage
 wait
 waiver
@@ -3306,14 +3282,12 @@ worri
 wors
 worst
 worth
-would
 wound
 write
 writer
 written
 wrong
 wrote
-x
 xpress
 ye
 year
