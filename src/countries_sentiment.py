@@ -130,6 +130,7 @@ def plot_entities_boxplot(df_entities, freq_th=2):
     )
     return fig
 
+
 def get_most_influential_countries(df_ent, freq_th=2, top_k=6):
     df_ent = df_ent[df_ent["freq"]>freq_th]
     top_positive = df_ent.sort_values(by=["norm"], ascending=False).iloc[:top_k]
@@ -138,6 +139,7 @@ def get_most_influential_countries(df_ent, freq_th=2, top_k=6):
     top_negative = top_negative[top_negative["norm"] < 0]
 
     return top_positive, top_negative
+
 
 def main():
     sns.set_theme()
