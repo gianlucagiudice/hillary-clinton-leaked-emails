@@ -55,10 +55,11 @@ def plot_most_influential_countries(df_nations, top_entities):
 
     # Edit the layout
     fig.update_layout(
-        yaxis_title="Frequency",
-        xaxis_title="Date",
+        yaxis_title="Frequenza",
+        xaxis_title="Data",
         title=dict(
-            text=f'Frequency of the most polarized countries by date',
+            text=f'Frequenza delle località scelte',
+            font_size=20,
             xanchor='center',
             x=0.5, y=.9)
     )
@@ -68,13 +69,14 @@ def plot_most_influential_countries(df_nations, top_entities):
 def plot_nations_geo(df_geo, freq_th=10):
     df_geo = df_geo[df_geo["freq"] > freq_th]
     fig = px.scatter_geo(df_geo, lat="lat", lon="long", hover_name="entity", size="freq",
-                         color="norm", color_continuous_scale="Bluered_r")
+                         color="norm", color_continuous_scale="Tempo")
 
     fig.update_layout(
         title=dict(
-            text=f'Sentiment of the countries (Frequency threshold {freq_th})',
+            text=f'Proiezione su mappa del Sentiment normalizzato associato ad ogni Località (soglia occorrenze: {freq_th})',
+            font_size=20,
             xanchor='center',
-            x=0.5, y=0.9)
+            x=0.5, y=0.95)
     )
     # fig.update_traces(marker=dict(size=10))
     return fig
@@ -83,13 +85,14 @@ def plot_nations_geo(df_geo, freq_th=10):
 def plot_entitites_sentiment(df_entities, top_k=30):
     df_entities = df_entities.iloc[:top_k]
     fig = px.scatter(df_entities, x="score", y="freq", text="entity", size="freq",
-                     color="score", color_continuous_scale="Bluered_r")
+                     color="score", color_continuous_scale="Tempo")
     fig.update_traces(textposition='top right')
     fig.update_layout(
         xaxis_title="Sentiment Score",
-        yaxis_title="Frequency",
+        yaxis_title="Frequenza",
         title=dict(
-            text=f'Sentiment of the countries (top {top_k} by frequency)',
+            text=f'Sentiment Associato alle Località (prime {top_k} per frequenza)',
+            font_size=20,
             xanchor='center',
             x=0.5)
     )
@@ -103,14 +106,15 @@ def plot_entities_normalized(df_entities, freq_th=30):
     df_entities_sub.head()
 
     fig = px.bar(df_entities_sub, x="entity", y="norm", hover_data=["freq"],
-                 color="norm", color_continuous_scale="Bluered_r")
+                 color="norm", color_continuous_scale="Tempo")
 
     fig.update_layout(
-        yaxis_title="Sentiment Score normalized",
-        xaxis_title="Entity",
+        yaxis_title="Sentiment Score normalizzato",
+        xaxis_title="Località",
         title=dict(
-            text=f'Sentiment of the countries normalized (Frequency threshold {freq_th})',
+            text=f'Istogramma del Sentiment Normalizzato associato ad ogni Località (soglia occorrenze: {freq_th})',
             xanchor='center',
+            font_size=20,
             x=0.5),
         coloraxis_colorbar=dict(title="Sentiment")
     )
@@ -121,10 +125,11 @@ def plot_entities_boxplot(df_entities, freq_th=2):
     df_entities = df_entities[df_entities["freq"] > freq_th]
     fig = px.box(df_entities, x="norm", points="all", hover_data=["entity", "freq"], height=400)
     fig.update_layout(
-        xaxis_title="Sentiment Score normalized",
+        xaxis_title="Sentiment Score normalizzato",
         title=dict(
-            text=f'Boxplot of the normalized sentiment of the countries (frequency threshold {freq_th})',
+            text=f'Boxplot del Sentiment Normalizzato associato ad ogni Località (soglia occorrenze: {freq_th})',
             xanchor='center',
+            font_size=20,
             x=0.5),
         coloraxis_colorbar=dict(title="Sentiment")
     )

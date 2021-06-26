@@ -17,3 +17,4 @@ def preprocess_emails(dataset, persons):
     df["SenderPersonId"] = df["SenderPersonId"].astype(str).str.slice(0, -2, 1)
 
     return df
+
