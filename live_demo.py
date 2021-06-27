@@ -13,7 +13,7 @@ from src.countries_sentiment import (
 
 from dash.dependencies import Input, Output
 
-TOP_K = 10
+TOP_K = 15
 
 dataset = pd.read_csv("data/Emails.csv")
 persons = pd.read_csv("data/Persons.csv")
@@ -60,7 +60,13 @@ chart2.update_layout(
         xanchor='center',
         x=0.5, y=.9),
     # paper_bgcolor="#f2f7f7",
-    font_size=15
+    font_size=15,
+    yaxis=dict(
+        tickmode='linear',
+        tick0=0,
+        dtick=0.1
+    ),
+    height=650
 )
 
 chart3 = px.treemap(df, path=['SenderFullName'],
@@ -78,7 +84,7 @@ chart3.update_layout(
 chart3.update_traces(textinfo='label + percent parent')
 
 div_style = {"marginTop": 50, "background-color": "#edf1f2"}
-tab_style = {"marginLeft": 150, "marginRight": 150, "marginTop": 50,
+tab_style = {"marginLeft": 150, "marginRight": 150, "marginTop": 100, "marginBottom": 100,
              "color": "#d4a715", "background-color": "#edf1f2"}
 slider_style = {"width": "60%", "margin": "0 auto"}
 
@@ -358,14 +364,19 @@ app.layout = html.Div(
                             html.Div(
                                 children=[
                                     html.Div(
-                                        html.H5(children=["Le email più corte riguardano ",
+                                        html.H5(children=["Le ",
+                                              html.Span("email più corte", className="number-emphasis"),
+                                                          " (meno di 6 tokens) riguardano ",
                                               html.Span("situazioni d’ufficio e organizzative", className="number-emphasis"),
                                               ", così come il più evidente 'fyi' (For Your Information)."],
                                                 className="cell2"
                                                 ),
                                         className="columns2"),
                                     html.Div(
-                                        html.H5(children=["Le email più lunghe ",
+                                        html.H5(children=["Le ",
+                                                          html.Span("email più lunghe", className="number-emphasis"),
+
+                                                          " (più di 6 tokens) ",
                                                   html.Span("sono dichiaratamente politiche", className="number-emphasis"),
                                                   ", con 'state' come parola più utilizzata."],
                                                 className="cell2"
@@ -374,8 +385,14 @@ app.layout = html.Div(
                                 ], className="row2"),
                             html.Div(
                                 children=[
-                                    html.Img(src="/assets/word_cloud_short.png", className="columns1"),
-                                    html.Img(src="/assets/word_cloud_long.png", className="columns1")
+                                    html.Div(
+                                        html.Img(src="/assets/word_cloud_short_clean.png", className="columns1"),
+                                        className="imgContainer"
+                                    ),
+                                    html.Div(
+                                        html.Img(src="/assets/word_cloud_long_clean.png", className="columns1"),
+                                        className="imgContainer"
+                                    )
                                 ], className="row1"),
                             html.Hr(),
                             html.Div(
@@ -408,34 +425,158 @@ app.layout = html.Div(
                                                 ),
                                        className="columns2")
                                 ], style={"display":"flex"}),
+
+                            # Topic 0
                             html.Div(children=[
                                 html.Div(
                                     children=[
-                                        html.Img(src="/assets/word_clouds_topics_pos.png", className="columns1"),
-                                        html.Table(children=[
-                                            html.Tr(html.Td(children=[html.H3("Internal Relations of the Party"),"bal bla bla bla"])),
-                                            html.Tr(html.Td(children=[html.H3("Office Work"),"bal bla bla bla"])),
-                                            html.Tr(html.Td(children=[html.H3("Press"),"bal bla bla bla"])),
-                                            html.Tr(html.Td(children=[html.H3("Israeli-Palestinian Conflict"),"bal bla bla bla"])),
-                                            html.Tr(html.Td(children=[html.H3("Violence against Women"),"bal bla bla bla"]))]
-                                        )
-                                        ],
-                                    style={"display":"flex", "width":"50%"}
+                                        html.Div(
+                                            html.Img(
+                                                src="/assets/topic_S0-T0_clean.png", className="columns1",
+                                            ), className="wordcloudTopic"
+                                        ),
+                                        html.Div(
+                                            html.Div(children=[html.H3("Internal Relations of the Party"),
+                                                               "bal bla bla bla"]
+                                            ), className="wordcloudDescription"
+                                        ),
+                                    ], className="topicContainer"
                                 ),
                                 html.Div(
                                     children=[
-                                        html.Img(src="/assets/word_clouds_topics_neg.png", className="columns1"),
-                                        html.Table(children=[
-                                            html.Tr(html.Td(children=[html.H3("China"),"bal bla bla bla"])),
-                                            html.Tr(html.Td(children=[html.H3("Industrial Support"),"bal bla bla bla"])),
-                                            html.Tr(html.Td(children=[html.H3("Afghanistan Conflict"),"bal bla bla bla"])),
-                                            html.Tr(html.Td(children=[html.H3("British Relations"),"bal bla bla bla"])),
-                                            html.Tr(html.Td(children=[html.H3("Against Republicans"),"bal bla bla bla"]))]
-                                            )
-                                        ],
-                                    style={"display":"flex", "width":"50%"}
-                                )], className="row1")
-
+                                        html.Div(
+                                            html.Img(
+                                                src="/assets/topic_S1-T0_clean.png", className="columns1",
+                                            ), className="wordcloudTopic"
+                                        ),
+                                        html.Div(
+                                            html.Div(
+                                                children=[html.H3("China"),"bal bla bla bla"]
+                                            ), className="wordcloudDescription"
+                                        ),
+                                    ], className="topicContainer"
+                                )
+                            ], className="row1"),
+                            # Topic 1
+                            html.Div(children=[
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            html.Img(
+                                                src="/assets/topic_S0-T1_clean.png", className="columns1",
+                                            ), className="wordcloudTopic"
+                                        ),
+                                        html.Div(
+                                            html.Div(children=[html.H3("Office Work"),
+                                                               "work, call, thank, tomorrow"]
+                                            ), className="wordcloudDescription"
+                                        ),
+                                    ], className="topicContainer"
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            html.Img(
+                                                src="/assets/topic_S1-T1_clean.png", className="columns1",
+                                            ), className="wordcloudTopic"
+                                        ),
+                                        html.Div(
+                                            html.Div(children=[html.H3("Industrial Support"),"bal bla bla bla"]
+                                            ), className="wordcloudDescription"
+                                        ),
+                                    ], className="topicContainer"
+                                )
+                            ], className="row1"),
+                            # Topic 2
+                            html.Div(children=[
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            html.Img(
+                                                src="/assets/topic_S0-T2_clean.png", className="columns1",
+                                            ), className="wordcloudTopic"
+                                        ),
+                                        html.Div(
+                                            html.Div(children=[html.H3("Press"),
+                                                               "secretary office meet"]
+                                            ), className="wordcloudDescription"
+                                        ),
+                                    ], className="topicContainer"
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            html.Img(
+                                                src="/assets/topic_S1-T2_clean.png", className="columns1",
+                                            ), className="wordcloudTopic"
+                                        ),
+                                        html.Div(
+                                            html.Div(children=[html.H3("Afghanistan Conflict"),"bal bla bla bla"]
+                                            ), className="wordcloudDescription"
+                                        ),
+                                    ], className="topicContainer"
+                                )
+                            ], className="row1"),
+                            # Topic 3
+                            html.Div(children=[
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            html.Img(
+                                                src="/assets/topic_S0-T3_clean.png", className="columns1",
+                                            ), className="wordcloudTopic"
+                                        ),
+                                        html.Div(
+                                            html.Div(children=[html.H3("Israeli-Palestinian Conflict"),
+                                                               "israel palestine peace"]
+                                            ), className="wordcloudDescription"
+                                        ),
+                                    ], className="topicContainer"
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            html.Img(
+                                                src="/assets/topic_S1-T3_clean.png", className="columns1",
+                                            ), className="wordcloudTopic"
+                                        ),
+                                        html.Div(
+                                            html.Div(children=[html.H3("British Relations"),"bal bla bla bla"]
+                                            ), className="wordcloudDescription"
+                                        ),
+                                    ], className="topicContainer"
+                                )
+                            ], className="row1"),
+                            # Topic 4
+                            html.Div(children=[
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            html.Img(
+                                                src="/assets/topic_S0-T4_clean.png", className="columns1",
+                                            ), className="wordcloudTopic"
+                                        ),
+                                        html.Div(
+                                            html.Div(children=[html.H3("Violence against Women"),
+                                                               "women secure support"]
+                                            ), className="wordcloudDescription"
+                                        ),
+                                    ], className="topicContainer"
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            html.Img(
+                                                src="/assets/topic_S1-T4_clean.png", className="columns1",
+                                            ), className="wordcloudTopic"
+                                        ),
+                                        html.Div(
+                                            html.Div(children=[html.H3("Against Republicans"),"bal bla bla bla"]
+                                            ), className="wordcloudDescription"
+                                        ),
+                                    ], className="topicContainer"
+                                )
+                            ], className="row1"),
                         ]
                     )
                 ]

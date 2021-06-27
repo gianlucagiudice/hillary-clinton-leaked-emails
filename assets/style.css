@@ -62,7 +62,7 @@ src: url("/assets/MISPROJECT.TTF");
 }
 
 .row1 {
-  display: flex;
+  display: inline-flex;
 }
 
 .row2 {
@@ -76,8 +76,25 @@ src: url("/assets/MISPROJECT.TTF");
 
 .columns1 {
   width: 100%;
-  flex: 50%;
-  padding: 5px;
+}
+
+
+.imgContainer {
+  margin: 30px;
+}
+
+.topicContainer {
+  margin: 30px;
+  display: flex;
+  width: 100%;
+}
+
+.wordcloudTopic {
+  width: 100%;
+}
+.wordcloudDescription {
+  width: 40%;
+  margin-left: 30px;
 }
 
 .columns2 {
