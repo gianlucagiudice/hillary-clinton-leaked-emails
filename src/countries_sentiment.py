@@ -29,6 +29,9 @@ import os
 import collections
 
 
+#COLOR_SCALE = "Tempo"
+COLOR_SCALE = "Bluered_r"
+
 def plot_nations_freq(df_nations):
     fig = px.area(df_nations, x='Date', y="Freq")
     fig.update_layout(
@@ -69,7 +72,7 @@ def plot_most_influential_countries(df_nations, top_entities):
 def plot_nations_geo(df_geo, freq_th=10):
     df_geo = df_geo[df_geo["freq"] > freq_th]
     fig = px.scatter_geo(df_geo, lat="lat", lon="long", hover_name="entity", size="freq",
-                         color="norm", color_continuous_scale="Tempo")
+                         color="norm", color_continuous_scale=COLOR_SCALE)
 
     fig.update_layout(
         title=dict(
@@ -85,7 +88,7 @@ def plot_nations_geo(df_geo, freq_th=10):
 def plot_entitites_sentiment(df_entities, top_k=30):
     df_entities = df_entities.iloc[:top_k]
     fig = px.scatter(df_entities, x="score", y="freq", text="entity", size="freq",
-                     color="score", color_continuous_scale="Tempo")
+                     color="score", color_continuous_scale=COLOR_SCALE)
     fig.update_traces(textposition='top right')
     fig.update_layout(
         xaxis_title="Sentiment Score",
@@ -106,7 +109,7 @@ def plot_entities_normalized(df_entities, freq_th=30):
     df_entities_sub.head()
 
     fig = px.bar(df_entities_sub, x="entity", y="norm", hover_data=["freq"],
-                 color="norm", color_continuous_scale="Tempo")
+                 color="norm", color_continuous_scale=COLOR_SCALE)
 
     fig.update_layout(
         yaxis_title="Sentiment Score normalizzato",
