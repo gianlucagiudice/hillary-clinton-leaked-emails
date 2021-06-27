@@ -34,7 +34,7 @@ chart2.add_trace(go.Bar(
     x=cum_sum.index[:TOP_K],
     y=top_people[:TOP_K],
     name="Markers and Text",
-    marker_color="#636EFA",
+    marker_color="#0a3a6e",
     showlegend=False
 ))
 
@@ -65,7 +65,8 @@ chart2.update_layout(
 
 chart3 = px.treemap(df, path=['SenderFullName'],
                     height=500,
-                    title="Origine delle mail in percentuale")
+                    title="Origine delle mail in percentuale",
+                    color_discrete_sequence=px.colors.sequential.tempo_r)
 chart3.update_layout(
     title=dict(
         x=0.5,
@@ -77,8 +78,6 @@ chart3.update_layout(
 chart3.update_traces(textinfo='label + percent parent')
 
 div_style = {"marginTop": 50, "background-color": "#edf1f2"}
-intro_style = {"margin-top": 50, "font-size": "2.2rem", "text-align": "center", "font-family": "monospace, sans-serif",
-                "color": "#0d5a6e", "background-color": "#f2f7f7", "padding": "9px", "padding-left": "39%", "padding-block-end": "4px"}
 tab_style = {"marginLeft": 150, "marginRight": 150, "marginTop": 50,
              "color": "#d4a715", "background-color": "#edf1f2"}
 slider_style = {"width": "60%", "margin": "0 auto"}
@@ -108,7 +107,7 @@ def generate_hisplot_expl(dataframe):
     return html.Div([
         dcc.Graph(
             id='displot-people-date',
-            figure=px.histogram(dataframe, x="DateSent", marginal="rug", color="SenderFullName")),
+            figure=px.histogram(dataframe, x="DateSent", marginal="rug", color="SenderFullName", color_discrete_sequence=px.colors.sequential.tempo_r)),
         html.Center(html.H5(children=["I ",
                                 html.Span(
                                   f"{len(dataframe.SenderFullName.unique())}", className="number-emphasis"),
@@ -125,26 +124,28 @@ def generate_hisplot_expl(dataframe):
 app = dash.Dash(__name__)
 app.layout = html.Div(
     children=[
-                html.Center("HILLARY CLINTON'S LEAKED EMAILS", className="header"),
                 html.Div(
+                    children=[
+                    html.Center("HILLARY CLINTON'S LEAKED EMAILS", className="header"),
                     html.Div(
                         children=[
                             html.Div(
                                 html.Img(src="https://welovetrump.com/wp-content/uploads/2019/11/hillary-1-1-768x431.jpg"),
-                            className="col-sm-4"),
+                            style={"width": "100%","flex": "40%", "padding": "5px"}),
                             html.Div(
                                 children=[
                                 html.P("Durante il suo ruolo come Segretario di Stato degli Stati Uniti d’America,"
                                        " Hillary Clinton si è resa protagonista di uno scandalo riguardante l’utilizzo"
                                        " di server di mail privati per il trattamento di informazioni istituzionali, fra cui"
-                                       " alcune classificate e confidenziali.", style=intro_style),
+                                       " alcune classificate e confidenziali.", className="intro_style"),
                                 html.P("In seguito all’istituzione delle indagini, le mail sono state rese completamente"
                                        " pubbliche da esponenti di WikiLeaks, aprendo la strada alla condanna di entrambi"
-                                       "gli schieramenti politici statunitensi durante la campagna elettorale del 2016.", style=intro_style),
+                                       " gli schieramenti politici statunitensi durante la campagna elettorale del 2016.", className="intro_style"),
                                 html.P("Questo lavoro mira all'analisi delle email trapelate per comprendere l'indirizzo di politica estera "
-                                       "tenuto dalla Clinton e dalla sua rete di contatti.", style=intro_style)],
-                    className="col-sm-4")],
-                    className="row")),
+                                       "tenuto dalla Clinton e dalla sua rete di contatti.", className="intro_style")],
+                            style={"width": "100%", "flex": "60%", "padding": "5px"})],
+                    className="row")],
+                ),
                 html.Br(),
 
         dcc.Tabs([
@@ -181,6 +182,7 @@ app.layout = html.Div(
                                                                     '(Ordinati per utenti più attivi)'),
                                         html.Div(id='plot-container'),
                                         html.Br(),
+                                        html.Hr(),
                                         html.H5(
                                             children=[
                                                 "In generale è possibile notare come le attività siano molto concentrate, soprattutto ",
@@ -190,9 +192,10 @@ app.layout = html.Div(
 
                                     ])]
                         ),
-                    ]),
+                    ],),
 
-            dcc.Tab(label='Sentiment Analysis', children=[
+            dcc.Tab(label='Località',
+                    children=[
                 html.Div(
                     style=tab_style,
                     children=[
@@ -341,7 +344,107 @@ app.layout = html.Div(
                 )
 
             ]),
-        ])])
+
+            dcc.Tab(label='Argomenti Discussi',
+                children=[
+                    html.Div(
+                        style=tab_style,
+                        children=[
+                            html.Center(html.H2(children="sentiment analysis sui risultati del topic modeling")),
+                            html.Div(
+                                style=div_style,
+                                    children= html.H5("Inizialmente, gli argomenti scambiati fra la Clinton e i suoi contatti appaiono vaghi, "
+                                            "seppur riconducibili all'universo politico in generale.")),
+                            html.Div(
+                                children=[
+                                    html.Div(
+                                        html.H5(children=["Le email più corte riguardano ",
+                                              html.Span("situazioni d’ufficio e organizzative", className="number-emphasis"),
+                                              ", così come il più evidente 'fyi' (For Your Information)."],
+                                                className="cell2"
+                                                ),
+                                        className="columns2"),
+                                    html.Div(
+                                        html.H5(children=["Le email più lunghe ",
+                                                  html.Span("sono dichiaratamente politiche", className="number-emphasis"),
+                                                  ", con 'state' come parola più utilizzata."],
+                                                className="cell2"
+                                                ),
+                                       className="columns2")
+                                ], className="row2"),
+                            html.Div(
+                                children=[
+                                    html.Img(src="/assets/word_cloud_short.png", className="columns1"),
+                                    html.Img(src="/assets/word_cloud_long.png", className="columns1")
+                                ], className="row1"),
+                            html.Hr(),
+                            html.Div(
+                                children=[
+                                    html.Div(
+                                        html.H5(children=["Attraverso l'utilizzo di ",
+                                                          html.Span("tecniche di topic modeling ", className="number-emphasis"),
+                                                          "sono stati estratti ",
+                                                          html.Span("10 topics", className="number-emphasis"),
+                                                          ", di cui ",
+                                                          html.Span("5 positivi e 5 negativi", className="number-emphasis"),
+                                                          ".",
+                                                          ]
+
+                                                ),
+                                        ),
+                                ], className="row2"),
+                            html.Div(
+                                children=[
+                                    html.Div(
+                                        html.H5(
+                                              html.Span("Sentiment Positivo", className="number-emphasis"),
+                                                className="cell2"
+                                                ),
+                                        className="columns2"),
+                                    html.Div(
+                                        html.H5(
+                                                  html.Span("Sentiment Negativo", className="number-emphasis"),
+                                                className="cell2"
+                                                ),
+                                       className="columns2")
+                                ], style={"display":"flex"}),
+                            html.Div(children=[
+                                html.Div(
+                                    children=[
+                                        html.Img(src="/assets/word_clouds_topics_pos.png", className="columns1"),
+                                        html.Table(children=[
+                                            html.Tr(html.Td(children=[html.H3("Internal Relations of the Party"),"bal bla bla bla"])),
+                                            html.Tr(html.Td(children=[html.H3("Office Work"),"bal bla bla bla"])),
+                                            html.Tr(html.Td(children=[html.H3("Press"),"bal bla bla bla"])),
+                                            html.Tr(html.Td(children=[html.H3("Israeli-Palestinian Conflict"),"bal bla bla bla"])),
+                                            html.Tr(html.Td(children=[html.H3("Violence against Women"),"bal bla bla bla"]))]
+                                        )
+                                        ],
+                                    style={"display":"flex", "width":"50%"}
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Img(src="/assets/word_clouds_topics_neg.png", className="columns1"),
+                                        html.Table(children=[
+                                            html.Tr(html.Td(children=[html.H3("China"),"bal bla bla bla"])),
+                                            html.Tr(html.Td(children=[html.H3("Industrial Support"),"bal bla bla bla"])),
+                                            html.Tr(html.Td(children=[html.H3("Afghanistan Conflict"),"bal bla bla bla"])),
+                                            html.Tr(html.Td(children=[html.H3("British Relations"),"bal bla bla bla"])),
+                                            html.Tr(html.Td(children=[html.H3("Against Republicans"),"bal bla bla bla"]))]
+                                            )
+                                        ],
+                                    style={"display":"flex", "width":"50%"}
+                                )], className="row1")
+
+                        ]
+                    )
+                ]
+            )
+        ])
+
+    ])
+
+
 
 
 @app.callback(dash.dependencies.Output('plot-container', 'children'),

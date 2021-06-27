@@ -123,7 +123,7 @@ def plot_entities_normalized(df_entities, freq_th=30):
 
 def plot_entities_boxplot(df_entities, freq_th=2):
     df_entities = df_entities[df_entities["freq"] > freq_th]
-    fig = px.box(df_entities, x="norm", points="all", hover_data=["entity", "freq"], height=400)
+    fig = px.box(df_entities, x="norm", points="all", hover_data=["entity", "freq"], height=400, color_discrete_sequence=px.colors.sequential.tempo_r)
     fig.update_layout(
         xaxis_title="Sentiment Score normalizzato",
         title=dict(
@@ -135,6 +135,7 @@ def plot_entities_boxplot(df_entities, freq_th=2):
     )
     return fig
 
+
 def get_most_influential_countries(df_ent, freq_th=2, top_k=6):
     df_ent = df_ent[df_ent["freq"]>freq_th]
     top_positive = df_ent.sort_values(by=["norm"], ascending=False).iloc[:top_k]
@@ -143,6 +144,7 @@ def get_most_influential_countries(df_ent, freq_th=2, top_k=6):
     top_negative = top_negative[top_negative["norm"] < 0]
 
     return top_positive, top_negative
+
 
 def main():
     sns.set_theme()
