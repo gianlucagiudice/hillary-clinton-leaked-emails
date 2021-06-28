@@ -557,8 +557,8 @@ app.layout = html.Div(
                                             ), className="wordcloudTopic"
                                         ),
                                         html.Div(
-                                            html.Div(children=[html.H3("Violence against Women"),
-                                                               "women secure support"]
+                                            html.Div(children=[html.H3("Women"),
+                                                               "women secure support rights work"]
                                             ), className="wordcloudDescription"
                                         ),
                                     ], className="topicContainer"
