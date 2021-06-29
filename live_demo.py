@@ -152,7 +152,7 @@ app.layout = html.Div(
                                 html.P("In seguito all’istituzione delle indagini, le mail sono state rese completamente"
                                        " pubbliche da esponenti di WikiLeaks, aprendo la strada alla condanna di entrambi"
                                        " gli schieramenti politici statunitensi durante la campagna elettorale del 2016.", className="intro_style"),
-                                html.P("Questo lavoro mira all'analisi delle email trapelate per comprendere l'indirizzo di politica estera "
+                                html.P("Uno degli obiettivi di questo lavoro è l'analisi delle email trapelate per comprendere l'indirizzo di politica estera "
                                        "tenuto dalla Clinton e dalla sua rete di contatti.", className="intro_style")],
                             style={"width": "100%", "flex": "60%", "padding": "5px"})],
                     className="row")],
@@ -341,7 +341,7 @@ app.layout = html.Div(
                                                 dcc.Checklist(
                                                     id="checklist-negative",
                                                     options=get_checklist_options(top_positive),
-                                                    value=['benghazi']
+                                                    value=['benghazi','haiti','israel','sri lanka']
                                                 )
                                             ]
                                         ),
@@ -443,7 +443,7 @@ app.layout = html.Div(
                                         ),
                                         html.Div(
                                             html.Div(children=[html.H3("Internal Relations of the Party"),
-                                                               "bal bla bla bla"]
+                                                               "presid obama clinton"]
                                             ), className="wordcloudDescription"
                                         ),
                                     ], className="topicContainer"
@@ -457,7 +457,7 @@ app.layout = html.Div(
                                         ),
                                         html.Div(
                                             html.Div(
-                                                children=[html.H3("China"),"bal bla bla bla"]
+                                                children=[html.H3("China"),"china econom develop"]
                                             ), className="wordcloudDescription"
                                         ),
                                     ], className="topicContainer"
@@ -487,7 +487,7 @@ app.layout = html.Div(
                                             ), className="wordcloudTopic"
                                         ),
                                         html.Div(
-                                            html.Div(children=[html.H3("Industrial Support"),"bal bla bla bla"]
+                                            html.Div(children=[html.H3("Industrial Support"),"waiver agreement case percent"]
                                             ), className="wordcloudDescription"
                                         ),
                                     ], className="topicContainer"
@@ -517,7 +517,7 @@ app.layout = html.Div(
                                             ), className="wordcloudTopic"
                                         ),
                                         html.Div(
-                                            html.Div(children=[html.H3("Afghanistan Conflict"),"bal bla bla bla"]
+                                            html.Div(children=[html.H3("Afghanistan Conflict"),"afghanistan militari state war"]
                                             ), className="wordcloudDescription"
                                         ),
                                     ], className="topicContainer"
@@ -547,7 +547,7 @@ app.layout = html.Div(
                                             ), className="wordcloudTopic"
                                         ),
                                         html.Div(
-                                            html.Div(children=[html.H3("British Relations"),"bal bla bla bla"]
+                                            html.Div(children=[html.H3("British Relations"),"tori cameron labour unionist"]
                                             ), className="wordcloudDescription"
                                         ),
                                     ], className="topicContainer"
@@ -577,7 +577,7 @@ app.layout = html.Div(
                                             ), className="wordcloudTopic"
                                         ),
                                         html.Div(
-                                            html.Div(children=[html.H3("Against Republicans"),"bal bla bla bla"]
+                                            html.Div(children=[html.H3("Against Republicans"),"republican koch boehner"]
                                             ), className="wordcloudDescription"
                                         ),
                                     ], className="topicContainer"
