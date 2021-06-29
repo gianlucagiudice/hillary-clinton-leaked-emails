@@ -347,7 +347,8 @@ app.layout = html.Div(
                                     ],
                                 style={"text-align": "left"}),
                                 html.Br(),
-                                html.Div(id="countries-freq"),
+                                html.H6("Le frequenze per località sono espresse al primo del mese, ma sono calcolate su tutto quel mese."),
+                                html.Div(id="countries-freq")
                             ]
                         )
                     ]
