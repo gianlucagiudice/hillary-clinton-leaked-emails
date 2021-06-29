@@ -110,10 +110,14 @@ def generate_hisplot_expl(dataframe):
         for line in dataframe.value_counts(normalize=False):
             x += dataframe.value_counts(normalize=False)[i]
             i += 1
+    fig = px.histogram(dataframe, x="DateSent", marginal="rug", color="SenderFullName")
+    fig.update_layout(
+        xaxis_title="Data di invio",
+    )
     return html.Div([
         dcc.Graph(
             id='displot-people-date',
-            figure=px.histogram(dataframe, x="DateSent", marginal="rug", color="SenderFullName", color_discrete_sequence=px.colors.sequential.tempo_r)),
+            figure=fig),
         html.Center(html.H5(children=["I ",
                                 html.Span(
                                   f"{len(dataframe.SenderFullName.unique())}", className="number-emphasis"),

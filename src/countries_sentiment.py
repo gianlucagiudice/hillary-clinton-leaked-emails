@@ -35,8 +35,8 @@ COLOR_SCALE = "Bluered_r"
 def plot_nations_freq(df_nations):
     fig = px.area(df_nations, x='Date', y="Freq")
     fig.update_layout(
-        yaxis_title="Frequency",
-        xaxis_title="Date",
+        yaxis_title="Frequenza",
+        xaxis_title="Data",
         title=dict(
             text=f'Frequency of countries by date',
             xanchor='center',
