@@ -139,8 +139,9 @@ def plot_entities_boxplot(df_entities, freq_th=2):
     return fig
 
 
-def get_most_influential_countries(df_ent, freq_th=2, top_k=6):
-    df_ent = df_ent[df_ent["freq"]>freq_th]
+def get_most_influential_countries(df_ent, df_nations_metadata, freq_th=2, top_k=6):
+    df_ent["freqTot"] = [df_nations_metadata.loc[e]["freq"] for e in df_ent["entity"]]
+    df_ent = df_ent[df_ent["freqTot"]>freq_th]
     top_positive = df_ent.sort_values(by=["norm"], ascending=False).iloc[:top_k]
     top_positive = top_positive[top_positive["norm"] >= 0]
     top_negative = df_ent.sort_values(by=["norm"], ascending=True).iloc[:top_k]

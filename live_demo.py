@@ -20,13 +20,14 @@ persons = pd.read_csv("data/Persons.csv")
 df_entities = pd.read_pickle("pickle/df_entities.pkl")
 df_geo = pd.read_pickle("pickle/df_geo.pkl")
 df_nations = pd.read_pickle("pickle/df_nations.pkl")
+df_nations_metadata = pd.read_pickle("pickle/df_nations_metadata.pkl")
 
 df = preprocess_emails(dataset, persons)
 
 top_people = df['SenderFullName'].value_counts(normalize=True)[:TOP_K]
 cum_sum = np.cumsum(top_people)
 
-top_positive, top_negative = get_most_influential_countries(df_entities, freq_th=10, top_k=15)
+top_positive, top_negative = get_most_influential_countries(df_entities, df_nations_metadata, freq_th=10, top_k=15)
 
 chart2 = go.Figure()
 
@@ -95,7 +96,7 @@ def get_checklist_options(df):
         {
             'label': f'{x["entity"]} '
                      f'(score: {round(x["norm"], 2)}, '
-                     f'freq: {x["freq"]})',
+                     f'freq: {df_nations_metadata.loc[x["entity"]]["freq"]})',
             "value": x["entity"]
         }
         for _, x in df.iterrows()
@@ -315,9 +316,9 @@ app.layout = html.Div(
                                         # html.Label(id="label-freq-influential"),
                                         html.Div(id="label-freq-influential"),
                                         dcc.Slider(
-                                            id="slider-freq-th", min=1, max=max(df_entities["freq"]),
-                                            step=1, value=10,
-                                            marks={0: 0, max(df_entities["freq"]): max(df_entities["freq"])}),
+                                            id="slider-freq-th", min=1, max=max(df_nations_metadata["freq"]),
+                                            step=1, value=15,
+                                            marks={0: 0, max(df_nations_metadata["freq"]): max(df_nations_metadata["freq"])}),
                                     ]
                                 ),
                                 html.Div(
@@ -630,14 +631,14 @@ def display_entities_sentiment_container(value):
 @app.callback(Output('checklist-positive', 'options'),
               Input('slider-freq-th', 'value'))
 def display_most_influential_countries(value):
-    df = get_most_influential_countries(df_entities, freq_th=value, top_k=TOP_K)[0]
+    df = get_most_influential_countries(df_entities, df_nations_metadata, freq_th=value, top_k=TOP_K)[0]
     return get_checklist_options(df)
 
 
 @app.callback(Output('checklist-negative', 'options'),
               Input('slider-freq-th', 'value'))
 def display_most_influential_countries(value):
-    df = get_most_influential_countries(df_entities, freq_th=value, top_k=TOP_K)[1]
+    df = get_most_influential_countries(df_entities, df_nations_metadata, freq_th=value, top_k=TOP_K)[1]
     return get_checklist_options(df)
 
 
