@@ -94,7 +94,7 @@ def get_checklist_options(df):
     return [
         {
             'label': f'{x["entity"]} '
-                     f'(score: {round(x["norm"], 2)}), '
+                     f'(score: {round(x["norm"], 2)}, '
                      f'freq: {x["freq"]})',
             "value": x["entity"]
         }
