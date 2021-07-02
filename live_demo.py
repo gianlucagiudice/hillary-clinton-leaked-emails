@@ -317,7 +317,7 @@ app.layout = html.Div(
                                         html.Div(id="label-freq-influential"),
                                         dcc.Slider(
                                             id="slider-freq-th", min=1, max=max(df_nations_metadata["freq"]),
-                                            step=1, value=15,
+                                            step=1, value=23,
                                             marks={0: 0, max(df_nations_metadata["freq"]): max(df_nations_metadata["freq"])}),
                                     ]
                                 ),
@@ -330,7 +330,7 @@ app.layout = html.Div(
                                                 dcc.Checklist(
                                                     id="checklist-positive",
                                                     options=get_checklist_options(top_positive),
-                                                    value=['israel']
+                                                    value=['israel', 'haiti']
                                                 )
                                             ]
                                         ),
@@ -341,7 +341,7 @@ app.layout = html.Div(
                                                 dcc.Checklist(
                                                     id="checklist-negative",
                                                     options=get_checklist_options(top_positive),
-                                                    value=['benghazi','haiti','israel','sri lanka']
+                                                    value=['benghazi', 'sri lanka', 'libya']
                                                 )
                                             ]
                                         ),
@@ -626,20 +626,25 @@ def display_entities_sentiment_container(value):
 def display_entities_sentiment_container(value):
     return dcc.Graph(figure=plot_entities_boxplot(df_entities, freq_th=value))
 
-
 # Frequency thld
-@app.callback(Output('checklist-positive', 'options'),
-              Input('slider-freq-th', 'value'))
-def display_most_influential_countries(value):
-    df = get_most_influential_countries(df_entities, df_nations_metadata, freq_th=value, top_k=TOP_K)[0]
-    return get_checklist_options(df)
+@app.callback([Output('checklist-positive', 'options'), Output('checklist-positive', 'value')],
+              [Input('slider-freq-th', 'value'), Input('checklist-positive', 'value')])
+def display_most_influential_countries(value, selected):
+    return display_most_influential_countries_helper(value, selected, 0)
 
 
-@app.callback(Output('checklist-negative', 'options'),
-              Input('slider-freq-th', 'value'))
-def display_most_influential_countries(value):
-    df = get_most_influential_countries(df_entities, df_nations_metadata, freq_th=value, top_k=TOP_K)[1]
-    return get_checklist_options(df)
+@app.callback([Output('checklist-negative', 'options'), Output('checklist-negative', 'value')],
+              [Input('slider-freq-th', 'value'), Input('checklist-negative', 'value')])
+def display_most_influential_countries(value, selected):
+    return display_most_influential_countries_helper(value, selected, 1)
+
+
+def display_most_influential_countries_helper(value, selected, pos):
+    df = get_most_influential_countries(df_entities, df_nations_metadata, freq_th=value, top_k=TOP_K)[pos]
+    options = get_checklist_options(df)
+    old_selected = set([x["value"] for x in options])
+    new_selected = old_selected.intersection(set(selected))
+    return options, list(new_selected)
 
 
 @app.callback(Output('label-freq-influential', 'children'),
