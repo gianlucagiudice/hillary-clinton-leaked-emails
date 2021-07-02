@@ -290,7 +290,7 @@ app.layout = html.Div(
                                         html.Label("Threshold frequenza dei paesi:"),
                                         dcc.Slider(
                                             id="slider-geo-sentiment", min=1, max=max(df_entities["freq"]),
-                                            step=1, value=15,
+                                            step=1, value=1,
                                             marks={0: 0, max(df_entities["freq"]): max(df_entities["freq"])}),
                                 html.Div(id="sentiment-geo-container")
                                     ]
