@@ -4,6 +4,9 @@
 - Gianluca Giudice - 830694
 - Daniele Turra - 860350
 
+## Documentazione
+- Cartella `doc/`
+
 ## Istruzioni
 1. Inserire dataset in cartella `data/`
 2. Eseguire notebook desiderato
