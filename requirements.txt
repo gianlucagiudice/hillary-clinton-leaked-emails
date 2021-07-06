@@ -1,0 +1,15 @@
+numpy
+plotly
+dash
+pandas
+regex
+nltk
+seaborn
+matplotlib
+wordcloud
+afinn
+spacy
+pandarallel
+requests
+datetime
+multiprocessing
